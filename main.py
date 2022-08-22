@@ -83,12 +83,16 @@ class Employee:
         json_obj = json.dumps(dictionary, indent=4)
         with open(f"{getcwd()}/people/{self.f_name}_{self.s_name}.json", 'w') as jfile:
             jfile.write(json_obj)
+        print("Saved!" + self.s_name + self.f_name )
 
 
-    def take_payed_vacation(self, start: datetime.datetime, finish: datetime.datetime):
+    def take_payed_vacation(self, start: str, finish: str):
+        start = self._parse_date(start)
+        finish = self._parse_date(finish)
         delta_days = finish - start
         self._vacation_days[1] -= delta_days.days
         self._vacation_days[0] = datetime.datetime.today()
+        print(self._vacation_days)
         
         
     def add_break(self, start: datetime.datetime, finish: datetime.datetime, reason: str):
@@ -120,7 +124,10 @@ class Employee:
     
 
     def __del__(self):
-        self._save()
+        try:
+            self._save()
+        except NameError:
+            pass
 
     
     def __str__(self):
@@ -131,6 +138,7 @@ class Employee:
 class App:
     def __init__(self, root: Tk):
         self.selected = None
+        self.workers = None
         
         self.main = root
         self.main.geometry("600x350")
@@ -185,7 +193,6 @@ class App:
         for worker in self.workers:
             self.workersLstBox.insert(END, ' '.join(worker))
 
-
     
     def _view(self, event):
         self.selected = Employee(*self.workers[self.workersLstBox.curselection()[0]])
@@ -201,8 +208,15 @@ class App:
                 
 
     def _add_vacation(self):
-        pass
-    
+        if self.selected is None:
+            self.infoLbl.configure(text="Спочатку оберіть \nпрацівника!")
+        else:
+            root = Toplevel()
+            root.title("Відпустка")
+            toplevelCreator(root, {0: "Дата початку відпустки", 1: "Дата кінця відпустки"}, self.selected.take_payed_vacation)
+            del self.selected
+            root.mainloop()
+        
 
     def _add_break(self):
         pass
