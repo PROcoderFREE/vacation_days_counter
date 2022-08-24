@@ -219,8 +219,14 @@ class App:
         
 
     def _add_break(self):
-        pass
-
+        if self.selected is None:
+            self.infoLbl.configure(text="Спочатку оберіть \nпрацівника!")
+        else:
+            root = Toplevel()
+            root.title("Відпустка")
+            toplevelCreator(root, {0: "Дата початку перерви в роботі", 1: "Дата кінця перерви в роботі", 2: "Причина перерви"}, self.selected.add_break)
+            del self.selected
+            root.mainloop()
 
             
 def toplevelCreator(root, questions: dict, func):
